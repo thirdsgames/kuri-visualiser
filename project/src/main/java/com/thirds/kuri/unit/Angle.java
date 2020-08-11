@@ -41,4 +41,8 @@ public class Angle {
     public String toString() {
         return radians.round(new MathContext(5)) + " rad";
     }
+
+    public Angle add(Angle angle) {
+        return Angle.radians(angle.radians.add(radians));
+    }
 }

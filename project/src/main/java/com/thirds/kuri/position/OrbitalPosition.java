@@ -21,6 +21,10 @@ public class OrbitalPosition implements ProceduralPosition {
      */
     private final Length radius;
     /**
+     * The angular offset of the orbit.
+     */
+    private final Angle offset;
+    /**
      * The angular velocity of the secondary w.r.t. the primary.
      */
     private final AngularVelocity angularVelocity;
@@ -29,11 +33,12 @@ public class OrbitalPosition implements ProceduralPosition {
      */
     private final Time timePeriod;
 
-    public OrbitalPosition(Body primary, Length radius) {
+    public OrbitalPosition(Body primary, Length radius, Angle offset) {
         this.primary = primary;
         this.radius = radius;
+        this.offset = offset;
 
-        // omega = sqrt( G m1 / r^3 )
+        // omega = sqrt( G * m_1 / r^3 )
         angularVelocity = AngularVelocity.radiansPerSecond(
                 G
                         .multiply(primary.getMass().kg)
@@ -47,7 +52,7 @@ public class OrbitalPosition implements ProceduralPosition {
     @Override
     public Position getPositionAtTime(Time time) {
         Angle angle = angularVelocity.multiply(time);
-        return Position.polar(radius, angle).add(primary.getPosition().getPositionAtTime(time));
+        return Position.polar(radius, angle.add(offset)).add(primary.getPosition().getPositionAtTime(time));
     }
 
     public Time getTimePeriod() {

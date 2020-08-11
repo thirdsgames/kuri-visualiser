@@ -35,7 +35,7 @@ public class KuriScreen implements Screen {
     private final ShapeRenderer sr = new ShapeRenderer();
     private final SpriteBatch sb = new SpriteBatch();
 
-    private AbsoluteTime time = AbsoluteTime.sinceFirstColony(Time.years(102));
+    private AbsoluteTime time = AbsoluteTime.sinceFirstColony(Time.years(0));
 
     public KuriScreen() {
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("CascadiaMono.ttf"));
@@ -79,7 +79,7 @@ public class KuriScreen implements Screen {
         Gdx.gl.glClearColor(0.01f, 0.01f, 0.03f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        time = time.add(Time.days(delta));
+        time = time.add(Time.years(delta));
         timeLabel.setText(time.toString());
 
         Body sun = new Body(
@@ -97,7 +97,8 @@ public class KuriScreen implements Screen {
                 Length.earthRadii(1),
                 new OrbitalPosition(
                         sun,
-                        Length.astronomicalUnits(1)
+                        Length.astronomicalUnits(1),
+                        Angle.radians(1f)
                 )
         );
 

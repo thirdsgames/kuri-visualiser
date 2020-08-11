@@ -9,9 +9,6 @@
 plugins {
     // Apply the java plugin to add support for Java
     id 'java'
-
-    // Apply the application plugin to add support for building a CLI application.
-    id 'application'
 }
 
 repositories {
@@ -50,7 +47,10 @@ dependencies {
     testImplementation 'junit:junit:4.13'
 }
 
-application {
-    // Define the main class for the application.
-    mainClassName = 'com.thirds.kuri.App'
+task run(dependsOn: classes, type: JavaExec) {
+    main = 'com.thirds.kuri.App'
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+
+    workingDir = new File('../assets')
 }

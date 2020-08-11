@@ -5,36 +5,73 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.thirds.kuri.position.OrbitalPosition;
 import com.thirds.kuri.position.StaticPosition;
 import com.thirds.kuri.unit.*;
 
 public class KuriScreen implements Screen {
-    private final OrthographicCamera cam;
-    private final ScreenViewport viewport;
+    private final OrthographicCamera worldCam;
+    private final ScreenViewport worldViewport;
+
+    private final OrthographicCamera screenCam;
+    private final ScreenViewport screenViewport;
+
+    private final Stage stage;
+    private final Label.LabelStyle labelStyle;
+
+    private final BitmapFont fontLarge;
+
+    private final Label timeLabel;
+
     private final ShapeRenderer sr = new ShapeRenderer();
-    private AbsoluteTime time = AbsoluteTime.sinceFirstColony(Time.years(103));
+    private final SpriteBatch sb = new SpriteBatch();
+
+    private AbsoluteTime time = AbsoluteTime.sinceFirstColony(Time.years(102));
 
     public KuriScreen() {
-        cam = new OrthographicCamera();
-        viewport = new ScreenViewport(cam);
-        cam.position.set(0, 0, 0);
-        cam.zoom = 0.01f;
+        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("CascadiaMono.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        param.size = 16;
+        fontLarge = gen.generateFont(param);
+
+        worldCam = new OrthographicCamera();
+        worldViewport = new ScreenViewport(worldCam);
+        worldCam.position.set(0, 0, 0);
+        worldCam.zoom = 0.01f;
+
+        screenCam = new OrthographicCamera();
+        screenViewport = new ScreenViewport(screenCam);
+
+        stage = new Stage(screenViewport, sb);
+
+        Table rootTable = new Table();
+        rootTable.setFillParent(true);
+        stage.addActor(rootTable);
+
+        labelStyle = new Label.LabelStyle();
+        labelStyle.font = fontLarge;
+        labelStyle.fontColor = Color.WHITE;
+
+        Table timeTable = new Table();
+        timeLabel = new Label("T", labelStyle);
+        timeTable.add(timeLabel).left().pad(16f);
+        timeTable.add(new Container<>()).growX();
+
+        rootTable.add(new Container<>()).growY().row();
+        rootTable.add(timeTable).bottom().growX();
     }
 
     @Override
     public void show() {
-        System.out.println("Time: " + AbsoluteTime.sinceFirstColony(Time.years(0)));
-
-        for (int i = 0; i < 10; i++) {
-            System.out.println();
-            System.out.println("Year " + (i+1));
-            System.out.println("Sub1: " + AbsoluteTime.sinceFirstColony(Time.years(i).add(Time.days(-1))));
-            System.out.println("Time: " + AbsoluteTime.sinceFirstColony(Time.years(i)));
-            System.out.println("Add1: " + AbsoluteTime.sinceFirstColony(Time.years(i).add(Time.days(1))));
-        }
     }
 
     @Override
@@ -42,7 +79,8 @@ public class KuriScreen implements Screen {
         Gdx.gl.glClearColor(0.01f, 0.01f, 0.03f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        time = time.add(Time.days(1));
+        time = time.add(Time.days(delta));
+        timeLabel.setText(time.toString());
 
         Body sun = new Body(
                 Color.YELLOW,
@@ -63,18 +101,27 @@ public class KuriScreen implements Screen {
                 )
         );
 
-        sr.setProjectionMatrix(viewport.getCamera().combined);
+        sr.setProjectionMatrix(worldViewport.getCamera().combined);
         sr.begin(ShapeRenderer.ShapeType.Filled);
 
-        sun.render(sr, 1f/cam.zoom, time);
-        sechia.render(sr, 1f/cam.zoom, time);
+        sun.render(sr, 1f/ worldCam.zoom, time);
+        sechia.render(sr, 1f/ worldCam.zoom, time);
 
         sr.end();
+
+        stage.act();
+        stage.draw();
+
+        /*sb.setProjectionMatrix(screenCam.combined);
+        sb.begin();
+        font.draw(sb, "Sechia", 0, 0);
+        sb.end();*/
     }
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height);
+        worldViewport.update(width, height);
+        screenViewport.update(width, height);
     }
 
     @Override

@@ -11,7 +11,7 @@ public class StaticPosition implements ProceduralPosition {
     }
 
     @Override
-    public Position getPositionAtTime(Time time) {
+    public Position getPositionAtTime(float camZoom, Time time) {
         return position;
     }
 }

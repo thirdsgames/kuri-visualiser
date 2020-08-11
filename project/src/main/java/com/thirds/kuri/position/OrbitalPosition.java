@@ -1,6 +1,7 @@
 package com.thirds.kuri.position;
 
 import com.thirds.kuri.Body;
+import com.thirds.kuri.Scaling;
 import com.thirds.kuri.unit.*;
 
 import java.math.BigDecimal;
@@ -50,9 +51,11 @@ public class OrbitalPosition implements ProceduralPosition {
     }
 
     @Override
-    public Position getPositionAtTime(Time time) {
+    public Position getPositionAtTime(float camZoom, Time time) {
         Angle angle = angularVelocity.multiply(time);
-        return Position.polar(radius, angle.add(offset)).add(primary.getPosition().getPositionAtTime(time));
+        return Position.polar(
+                Length.astronomicalUnits(Scaling.softplus(radius.asAstronomicalUnits().floatValue(), camZoom, 8)),
+                angle.add(offset)).add(primary.getPosition().getPositionAtTime(camZoom, time));
     }
 
     public Time getTimePeriod() {

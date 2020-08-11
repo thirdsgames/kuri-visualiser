@@ -79,7 +79,7 @@ public class KuriScreen implements Screen {
         Gdx.gl.glClearColor(0.01f, 0.01f, 0.03f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        time = time.add(Time.years(delta));
+        time = time.add(Time.days(5 * delta));
         timeLabel.setText(time.toString());
 
         Body sun = new Body(
@@ -98,7 +98,37 @@ public class KuriScreen implements Screen {
                 new OrbitalPosition(
                         sun,
                         Length.astronomicalUnits(1),
-                        Angle.radians(1f)
+                        Angle.radians(0f)
+                )
+        );
+        Body trewa = new Body(
+                Color.LIGHT_GRAY,
+                Mass.earthMasses(0.012f),
+                Length.earthRadii(0.23f),
+                new OrbitalPosition(
+                        sechia,
+                        Length.astronomicalUnits(0.00176f),
+                        Angle.radians(2.3f)
+                )
+        );
+        Body istia = new Body(
+                Color.LIGHT_GRAY,
+                Mass.earthMasses(0.009f),
+                Length.earthRadii(0.2f),
+                new OrbitalPosition(
+                        sechia,
+                        Length.astronomicalUnits(0.00356f),
+                        Angle.radians(5.1f)
+                )
+        );
+        Body doreton = new Body(
+                Color.LIGHT_GRAY,
+                Mass.earthMasses(0.05f),
+                Length.earthRadii(0.48f),
+                new OrbitalPosition(
+                        sechia,
+                        Length.astronomicalUnits(0.006716f),
+                        Angle.radians(0.2f)
                 )
         );
 
@@ -107,6 +137,9 @@ public class KuriScreen implements Screen {
 
         sun.render(sr, 1f / worldCam.zoom, time);
         sechia.render(sr, 1f / worldCam.zoom, time);
+        trewa.render(sr, 1f / worldCam.zoom, time);
+        istia.render(sr, 1f / worldCam.zoom, time);
+        doreton.render(sr, 1f / worldCam.zoom, time);
 
         sr.end();
 

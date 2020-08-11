@@ -37,7 +37,7 @@ public class Body {
     }
 
     public void render(ShapeRenderer sr, float viewZoom, AbsoluteTime time) {
-        Vector2 screenPos = position.getPositionAtTime(time.getSinceFirstColony()).asScreenPosition();
+        Vector2 screenPos = position.getPositionAtTime(viewZoom, time.getSinceFirstColony()).asScreenPosition();
         float radius = getRadius().asAstronomicalUnits().floatValue();
 
         // Make sure that the apparent radius is no smaller than ~3 px.

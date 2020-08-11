@@ -14,7 +14,7 @@ public class Mass {
     }
 
     public static Mass solarMasses(float quantity) {
-        return new Mass(new BigDecimal("1 988 000 000 000 000 000 000 000 000 000".replace(" ", "")).multiply(new BigDecimal(quantity)));
+        return new Mass(new BigDecimal("1 988 470 000 000 000 000 000 000 000 000".replace(" ", "")).multiply(new BigDecimal(quantity)));
     }
 
     public static Mass earthMasses(float quantity) {

@@ -1,21 +1,16 @@
 package com.thirds.kuri.position;
 
 import com.thirds.kuri.Body;
-import com.thirds.kuri.unit.AngularVelocity;
-import com.thirds.kuri.unit.Length;
-import com.thirds.kuri.unit.Position;
-import com.thirds.kuri.unit.Time;
+import com.thirds.kuri.unit.*;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.math.RoundingMode;
 
 /**
  * Assumes a circular orbit.
  */
 public class OrbitalPosition implements ProceduralPosition {
     private static final BigDecimal G = new BigDecimal("0.0000000000667408");
-    private static final BigDecimal TAU = new BigDecimal("6.28318531");
 
     /**
      * The body to orbit.
@@ -46,11 +41,16 @@ public class OrbitalPosition implements ProceduralPosition {
                         .sqrt(MathContext.DECIMAL128)
         );
 
-        timePeriod = Time.seconds(TAU.divide(angularVelocity.asRadiansPerSecond(), MathContext.DECIMAL128));
+        timePeriod = Time.seconds(Angle.TAU.divide(angularVelocity.asRadiansPerSecond(), MathContext.DECIMAL128));
     }
 
     @Override
     public Position getPositionAtTime(Time time) {
-        return null;
+        Angle angle = angularVelocity.multiply(time);
+        return Position.polar(radius, angle).add(primary.getPosition().getPositionAtTime(time));
+    }
+
+    public Time getTimePeriod() {
+        return timePeriod;
     }
 }

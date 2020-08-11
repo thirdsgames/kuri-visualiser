@@ -14,6 +14,14 @@ public class Position {
         return new Position(x, y);
     }
 
+    public static Position polar(Length r, Angle theta) {
+        return Position.cartesian(r.scl(theta.cos()), r.scl(theta.sin()));
+    }
+
+    public Position add(Position other) {
+        return new Position(x.add(other.x), y.add(other.y));
+    }
+
     /**
      * Converts x and y to astronomical units.
      */

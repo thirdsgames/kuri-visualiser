@@ -1,6 +1,7 @@
 package com.thirds.kuri.unit;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 
 public class AngularVelocity {
     private final BigDecimal radiansPerSecond;
@@ -15,5 +16,9 @@ public class AngularVelocity {
 
     public BigDecimal asRadiansPerSecond() {
         return radiansPerSecond;
+    }
+
+    public Angle multiply(Time time) {
+        return Angle.radians(radiansPerSecond.multiply(time.seconds, MathContext.DECIMAL128));
     }
 }

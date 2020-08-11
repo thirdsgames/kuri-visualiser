@@ -105,8 +105,8 @@ public class KuriScreen implements Screen {
         sr.setProjectionMatrix(worldViewport.getCamera().combined);
         sr.begin(ShapeRenderer.ShapeType.Filled);
 
-        sun.render(sr, 1f/ worldCam.zoom, time);
-        sechia.render(sr, 1f/ worldCam.zoom, time);
+        sun.render(sr, 1f / worldCam.zoom, time);
+        sechia.render(sr, 1f / worldCam.zoom, time);
 
         sr.end();
 
@@ -121,8 +121,8 @@ public class KuriScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        worldViewport.update(width, height);
-        screenViewport.update(width, height);
+        worldViewport.update(width, height, false);
+        screenViewport.update(width, height, true);
     }
 
     @Override

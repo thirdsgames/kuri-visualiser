@@ -57,9 +57,11 @@ public class KuriScreen implements Screen {
     private final ShapeRenderer sr = new ShapeRenderer();
     private final SpriteBatch sb = new SpriteBatch();
 
-    private AbsoluteTime time = AbsoluteTime.sinceFirstColony(Time.years(0));
+    private AbsoluteTime time = AbsoluteTime.sinceFirstColony(Time.years(102).add(Time.days(24)).add(Time.seconds(2674f)));
 
-    private TimeScale timeScale = TimeScale.REAL_TIME;
+    private TimeScale timeScale = TimeScale.DAY;
+
+    private BodySystem kuri = BodySystem.kuri();
 
     public KuriScreen() {
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("CascadiaMono.ttf"));
@@ -169,64 +171,10 @@ public class KuriScreen implements Screen {
         worldCam.update();
         posLabel.setText(String.format("P: (%01.3f, %01.3f)  Z: %02.3fx", worldCam.position.x, worldCam.position.y, 0.01f / worldCam.zoom));
 
-        Body sun = new Body(
-                Color.YELLOW,
-                Mass.solarMasses(1),
-                Length.solarRadii(1),
-                new StaticPosition(Position.cartesian(
-                        Length.solarRadii(0),
-                        Length.solarRadii(0)
-                ))
-        );
-        Body sechia = new Body(
-                Color.ROYAL,
-                Mass.earthMasses(1),
-                Length.earthRadii(1),
-                new OrbitalPosition(
-                        sun,
-                        Length.astronomicalUnits(1),
-                        Angle.radians(0f)
-                )
-        );
-        Body trewa = new Body(
-                Color.LIGHT_GRAY,
-                Mass.earthMasses(0.012f),
-                Length.earthRadii(0.23f),
-                new OrbitalPosition(
-                        sechia,
-                        Length.astronomicalUnits(0.00176f),
-                        Angle.radians(2.3f)
-                )
-        );
-        Body istia = new Body(
-                Color.LIGHT_GRAY,
-                Mass.earthMasses(0.009f),
-                Length.earthRadii(0.2f),
-                new OrbitalPosition(
-                        sechia,
-                        Length.astronomicalUnits(0.00356f),
-                        Angle.radians(5.1f)
-                )
-        );
-        Body doreton = new Body(
-                Color.LIGHT_GRAY,
-                Mass.earthMasses(0.05f),
-                Length.earthRadii(0.48f),
-                new OrbitalPosition(
-                        sechia,
-                        Length.astronomicalUnits(0.006716f),
-                        Angle.radians(0.2f)
-                )
-        );
-
         sr.setProjectionMatrix(worldViewport.getCamera().combined);
         sr.begin(ShapeRenderer.ShapeType.Filled);
 
-        sun.render(sr, 1f / worldCam.zoom, time);
-        sechia.render(sr, 1f / worldCam.zoom, time);
-        trewa.render(sr, 1f / worldCam.zoom, time);
-        istia.render(sr, 1f / worldCam.zoom, time);
-        doreton.render(sr, 1f / worldCam.zoom, time);
+        kuri.render(sr, 1f / worldCam.zoom, time);
 
         sr.end();
 

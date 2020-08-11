@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -24,6 +23,22 @@ import com.thirds.kuri.position.StaticPosition;
 import com.thirds.kuri.unit.*;
 
 public class KuriScreen implements Screen {
+    private enum TimeScale {
+        REV_YEAR(Time.years(-1)),
+        REV_DAY(Time.days(-1)),
+        REV_REAL_TIME(Time.seconds(-1)),
+        PAUSE(Time.seconds(0)),
+        REAL_TIME(Time.seconds(1)),
+        DAY(Time.days(1)),
+        YEAR(Time.years(1))
+        ;
+
+        TimeScale(Time duration) {
+            this.duration = duration;
+        }
+        private Time duration;
+    }
+
     private final OrthographicCamera worldCam;
     private Vector2 targetWorldPos = new Vector2();
     private float targetWorldZoom = 0.01f;
@@ -43,6 +58,8 @@ public class KuriScreen implements Screen {
     private final SpriteBatch sb = new SpriteBatch();
 
     private AbsoluteTime time = AbsoluteTime.sinceFirstColony(Time.years(0));
+
+    private TimeScale timeScale = TimeScale.REAL_TIME;
 
     public KuriScreen() {
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("CascadiaMono.ttf"));
@@ -88,8 +105,41 @@ public class KuriScreen implements Screen {
         Gdx.gl.glClearColor(0.01f, 0.01f, 0.03f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        time = time.add(Time.days(5 * delta));
-        timeLabel.setText(time.toString());
+        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+            increaseTimeScale();
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
+            decreaseTimeScale();
+        }
+
+        time = time.add(timeScale.duration.scl(delta));
+        String timeScaleString;
+        switch (timeScale) {
+            case REV_YEAR:
+                timeScaleString = "<<<";
+                break;
+            case REV_DAY:
+                timeScaleString = "<<";
+                break;
+            case REV_REAL_TIME:
+                timeScaleString = "<";
+                break;
+            case PAUSE:
+                timeScaleString = "||";
+                break;
+            case REAL_TIME:
+                timeScaleString = ">";
+                break;
+            case DAY:
+                timeScaleString = ">>";
+                break;
+            case YEAR:
+                timeScaleString = ">>>";
+                break;
+            default:
+                timeScaleString = "?";
+        }
+        timeLabel.setText("T: " + time + "  " + timeScaleString);
 
         float movementSpeed = 300f * worldCam.zoom;
         float scaleSpeed = 1f;
@@ -117,7 +167,7 @@ public class KuriScreen implements Screen {
         worldCam.position.lerp(new Vector3(targetWorldPos.x, targetWorldPos.y, 0), 5 * delta);
         worldCam.zoom = MathUtils.lerp(worldCam.zoom, targetWorldZoom, 5 * delta);
         worldCam.update();
-        posLabel.setText(String.format("(%01.3f, %01.3f)", worldCam.position.x, worldCam.position.y));
+        posLabel.setText(String.format("P: (%01.3f, %01.3f)  Z: %02.3fx", worldCam.position.x, worldCam.position.y, 0.01f / worldCam.zoom));
 
         Body sun = new Body(
                 Color.YELLOW,
@@ -187,6 +237,56 @@ public class KuriScreen implements Screen {
         sb.begin();
         font.draw(sb, "Sechia", 0, 0);
         sb.end();*/
+    }
+
+    private void increaseTimeScale() {
+        switch (timeScale) {
+            case REV_YEAR:
+                timeScale = TimeScale.REV_DAY;
+                break;
+            case REV_DAY:
+                timeScale = TimeScale.REV_REAL_TIME;
+                break;
+            case REV_REAL_TIME:
+                timeScale = TimeScale.PAUSE;
+                break;
+            case PAUSE:
+                timeScale = TimeScale.REAL_TIME;
+                break;
+            case REAL_TIME:
+                timeScale = TimeScale.DAY;
+                break;
+            case DAY:
+                timeScale = TimeScale.YEAR;
+                break;
+            case YEAR:
+                break;
+        }
+    }
+
+    private void decreaseTimeScale() {
+        switch (timeScale) {
+            case REV_YEAR:
+                break;
+            case REV_DAY:
+                timeScale = TimeScale.REV_YEAR;
+                break;
+            case REV_REAL_TIME:
+                timeScale = TimeScale.REV_DAY;
+                break;
+            case PAUSE:
+                timeScale = TimeScale.REV_REAL_TIME;
+                break;
+            case REAL_TIME:
+                timeScale = TimeScale.PAUSE;
+                break;
+            case DAY:
+                timeScale = TimeScale.REAL_TIME;
+                break;
+            case YEAR:
+                timeScale = TimeScale.DAY;
+                break;
+        }
     }
 
     @Override

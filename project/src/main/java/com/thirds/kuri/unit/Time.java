@@ -90,4 +90,8 @@ public class Time {
                 seconds[1].floatValue()
         );
     }
+
+    public Time scl(float scale) {
+        return Time.seconds(seconds.multiply(new BigDecimal(scale)));
+    }
 }

@@ -87,6 +87,7 @@ public class Time {
                 hours[0].setScale(0, RoundingMode.HALF_UP).intValue(),
                 hours[1].setScale(0, RoundingMode.HALF_UP).intValue(),
                 minutes[1].setScale(0, RoundingMode.HALF_UP).intValue(),
-                seconds[1].setScale(0, RoundingMode.HALF_UP).intValue());
+                seconds[1].floatValue()
+        );
     }
 }

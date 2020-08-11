@@ -26,7 +26,15 @@ public class KuriScreen implements Screen {
 
     @Override
     public void show() {
+        System.out.println("Time: " + AbsoluteTime.sinceFirstColony(Time.years(0)));
 
+        for (int i = 0; i < 10; i++) {
+            System.out.println();
+            System.out.println("Year " + (i+1));
+            System.out.println("Sub1: " + AbsoluteTime.sinceFirstColony(Time.years(i).add(Time.days(-1))));
+            System.out.println("Time: " + AbsoluteTime.sinceFirstColony(Time.years(i)));
+            System.out.println("Add1: " + AbsoluteTime.sinceFirstColony(Time.years(i).add(Time.days(1))));
+        }
     }
 
     @Override
@@ -34,8 +42,7 @@ public class KuriScreen implements Screen {
         Gdx.gl.glClearColor(0.01f, 0.01f, 0.03f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        time = time.add(Time.days(delta));
-        System.out.println("Current time: " + time);
+        time = time.add(Time.days(1));
 
         Body sun = new Body(
                 Color.YELLOW,
@@ -55,8 +62,6 @@ public class KuriScreen implements Screen {
                         Length.astronomicalUnits(1)
                 )
         );
-
-        System.out.println(((OrbitalPosition) sechia.getPosition()).getTimePeriod());
 
         sr.setProjectionMatrix(viewport.getCamera().combined);
         sr.begin(ShapeRenderer.ShapeType.Filled);

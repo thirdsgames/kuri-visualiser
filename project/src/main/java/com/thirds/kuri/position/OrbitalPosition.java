@@ -53,8 +53,9 @@ public class OrbitalPosition implements ProceduralPosition {
     @Override
     public Position getPositionAtTime(float camZoom, Time time) {
         Angle angle = angularVelocity.multiply(time);
+        float apparentRadius = Scaling.softerplus(radius.asAstronomicalUnits().floatValue(), camZoom, 8);
         return Position.polar(
-                Length.astronomicalUnits(Scaling.softplus(radius.asAstronomicalUnits().floatValue(), camZoom, 8)),
+                Length.astronomicalUnits(apparentRadius),
                 angle.add(offset)).add(primary.getPosition().getPositionAtTime(camZoom, time));
     }
 

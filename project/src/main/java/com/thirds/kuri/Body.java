@@ -44,6 +44,6 @@ public class Body {
         radius = Scaling.softplus(radius, viewZoom, 3);
 
         sr.setColor(colour);
-        sr.circle(screenPos.x, screenPos.y, radius, (int) (radius * viewZoom * 5));
+        sr.circle(screenPos.x, screenPos.y, radius, 20);
     }
 }

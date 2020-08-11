@@ -1,6 +1,7 @@
 package com.thirds.kuri;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -9,6 +10,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -20,6 +25,8 @@ import com.thirds.kuri.unit.*;
 
 public class KuriScreen implements Screen {
     private final OrthographicCamera worldCam;
+    private Vector2 targetWorldPos = new Vector2();
+    private float targetWorldZoom = 0.01f;
     private final ScreenViewport worldViewport;
 
     private final OrthographicCamera screenCam;
@@ -30,7 +37,7 @@ public class KuriScreen implements Screen {
 
     private final BitmapFont fontLarge;
 
-    private final Label timeLabel;
+    private final Label timeLabel, posLabel;
 
     private final ShapeRenderer sr = new ShapeRenderer();
     private final SpriteBatch sb = new SpriteBatch();
@@ -65,6 +72,8 @@ public class KuriScreen implements Screen {
         timeLabel = new Label("T", labelStyle);
         timeTable.add(timeLabel).left().pad(16f);
         timeTable.add(new Container<>()).growX();
+        posLabel = new Label("P", labelStyle);
+        timeTable.add(posLabel).right().pad(16f);
 
         rootTable.add(new Container<>()).growY().row();
         rootTable.add(timeTable).bottom().growX();
@@ -81,6 +90,34 @@ public class KuriScreen implements Screen {
 
         time = time.add(Time.days(5 * delta));
         timeLabel.setText(time.toString());
+
+        float movementSpeed = 300f * worldCam.zoom;
+        float scaleSpeed = 1f;
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            targetWorldPos.y += delta * movementSpeed;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            targetWorldPos.y -= delta * movementSpeed;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            targetWorldPos.x += delta * movementSpeed;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            targetWorldPos.x -= delta * movementSpeed;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+            targetWorldZoom /= 1 + scaleSpeed * delta;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+            targetWorldZoom *= 1 + scaleSpeed * delta;
+        }
+
+        targetWorldZoom = MathUtils.clamp(targetWorldZoom, 0.0001f, 0.01f);
+
+        worldCam.position.lerp(new Vector3(targetWorldPos.x, targetWorldPos.y, 0), 5 * delta);
+        worldCam.zoom = MathUtils.lerp(worldCam.zoom, targetWorldZoom, 5 * delta);
+        worldCam.update();
+        posLabel.setText(String.format("(%01.3f, %01.3f)", worldCam.position.x, worldCam.position.y));
 
         Body sun = new Body(
                 Color.YELLOW,
